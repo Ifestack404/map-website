@@ -39,7 +39,7 @@ function InteractionHint({ visible }: { visible: boolean }) {
 
   return (
     <p className="pointer-events-none absolute bottom-6 left-1/2 z-10 -translate-x-1/2 rounded-full border border-white/10 bg-slate-950/50 px-4 py-2 text-xs tracking-wide text-slate-300 backdrop-blur-sm">
-      Drag to rotate · Zoom in to see more country names
+      Drag to rotate · Scroll to zoom
     </p>
   );
 }

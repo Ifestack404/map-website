@@ -80,11 +80,10 @@ export const COUNTRY_BORDERS = {
 /**
  * Label anchors sit a little further out than borders so names are not clipped.
  */
-export const COUNTRY_LABEL_RADIUS_SCALE = 1.028;
+export const COUNTRY_LABEL_RADIUS_SCALE = 1.012;
 
 export const COUNTRY_LABELS = {
-  facingDot: 0.16,
-  /** Camera distance from origin → how many names to show. */
+  facingDot: 0.32,
   farDistance: 5.05,
   midDistance: 3.55,
   farCount: 22,

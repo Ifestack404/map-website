@@ -1,3 +1,4 @@
+import { Matrix4, Quaternion, Vector3 } from "three";
 import type { CountryLabelAnchor, CountryRecord, LngLatRing } from "@/types/geography";
 import { getCountryLabelRadius } from "@/lib/globe-config";
 import {
@@ -21,6 +22,35 @@ const SHORT_NAMES: Record<string, string> = {
 
 function displayName(name: string): string {
   return SHORT_NAMES[name] ?? name;
+}
+
+const east = new Vector3();
+const north = new Vector3();
+const normal = new Vector3();
+const worldUp = new Vector3(0, 1, 0);
+const basis = new Matrix4();
+const orientation = new Quaternion();
+
+/**
+ * Orient text on the tangent plane: +Z outward, +Y toward north.
+ * Names stay glued to the country instead of billboarding in front of the globe.
+ */
+function tangentQuaternion(
+  x: number,
+  y: number,
+  z: number,
+): [number, number, number, number] {
+  normal.set(x, y, z).normalize();
+  east.crossVectors(worldUp, normal);
+  if (east.lengthSq() < 1e-10) {
+    east.set(1, 0, 0);
+  } else {
+    east.normalize();
+  }
+  north.crossVectors(normal, east).normalize();
+  basis.makeBasis(east, north, normal);
+  orientation.setFromRotationMatrix(basis);
+  return [orientation.x, orientation.y, orientation.z, orientation.w];
 }
 
 function largestRing(rings: LngLatRing[]): LngLatRing | null {
@@ -73,10 +103,14 @@ export function getCountryLabelAnchors(
     if (!(length > 1e-8)) continue;
 
     const scale = radius / length;
+    const px = x * scale;
+    const py = y * scale;
+    const pz = z * scale;
     anchors.push({
       id: country.id,
       name: displayName(country.name),
-      position: [x * scale, y * scale, z * scale],
+      position: [px, py, pz],
+      quaternion: tangentQuaternion(px, py, pz),
       importance: count,
       rank: 0,
     });

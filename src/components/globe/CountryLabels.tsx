@@ -2,7 +2,7 @@
 
 import { useMemo, useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Html } from "@react-three/drei";
+import { Text } from "@react-three/drei";
 import { Group, Vector3 } from "three";
 import { COUNTRY_LABELS } from "@/lib/globe-config";
 import { getCountryLabelAnchors } from "@/lib/geography/labels";
@@ -18,9 +18,10 @@ function labelLimit(distance: number): number {
 }
 
 function fontSizeForRank(rank: number): number {
-  if (rank < 10) return 13;
-  if (rank < 28) return 11;
-  return 10;
+  if (rank < 8) return 0.108;
+  if (rank < 22) return 0.078;
+  if (rank < 55) return 0.054;
+  return 0.04;
 }
 
 function CountryLabel({ anchor }: { anchor: CountryLabelAnchor }) {
@@ -33,31 +34,43 @@ function CountryLabel({ anchor }: { anchor: CountryLabelAnchor }) {
     group.getWorldPosition(worldPos);
     worldPos.normalize();
     cameraDir.copy(camera.position).normalize();
+    // Hide edge-on text at the limb so names do not flatten into floating slivers.
     group.visible = worldPos.dot(cameraDir) > COUNTRY_LABELS.facingDot;
   });
 
   return (
-    <group ref={groupRef} position={anchor.position}>
-      <Html
-        center
-        pointerEvents="none"
-        zIndexRange={[20, 0]}
-        wrapperClass="country-label"
-        style={{
-          fontSize: `${fontSizeForRank(anchor.rank)}px`,
-        }}
+    <group ref={groupRef} position={anchor.position} quaternion={anchor.quaternion}>
+      <Text
+        fontSize={fontSizeForRank(anchor.rank)}
+        color="#f8fafc"
+        outlineWidth={0.018}
+        outlineColor="#020617"
+        outlineOpacity={0.9}
+        anchorX="center"
+        anchorY="middle"
+        textAlign="center"
+        maxWidth={0.85}
+        overflowWrap="break-word"
+        letterSpacing={0.02}
+        depthOffset={-4}
+        renderOrder={3}
+        raycast={() => {}}
       >
         {anchor.name}
-      </Html>
+      </Text>
     </group>
   );
 }
 
 /**
- * Screen-space country names on the facing hemisphere.
- * Density increases as the camera dollies in so a world view stays readable.
+ * Country names as 3D glyphs on the sphere surface.
+ * They inherit Earth's rotation and are occluded on the far side.
  */
-export function CountryLabels({ countries }: { countries: readonly CountryRecord[] }) {
+export function CountryLabels({
+  countries,
+}: {
+  countries: readonly CountryRecord[];
+}) {
   const anchors = useMemo(() => getCountryLabelAnchors(countries), [countries]);
   const [limit, setLimit] = useState(() => labelLimit(4.35));
   const limitRef = useRef(limit);

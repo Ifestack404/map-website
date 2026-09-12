@@ -22,19 +22,3 @@ body {
 body {
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
-
-.country-label {
-  pointer-events: none !important;
-  user-select: none;
-}
-
-.country-label > div {
-  color: #f8fafc;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  line-height: 1.15;
-  white-space: nowrap;
-  text-shadow:
-    0 1px 2px rgba(2, 6, 23, 0.95),
-    0 0 10px rgba(2, 6, 23, 0.75);
-}

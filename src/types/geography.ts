@@ -37,6 +37,8 @@ export interface CountryLabelAnchor {
   id: string;
   name: string;
   position: [x: number, y: number, z: number];
+  /** Tangent-plane orientation so the glyph sits on the sphere, not in screen space. */
+  quaternion: [x: number, y: number, z: number, w: number];
   /** Higher = larger country; used for zoom-based label density. */
   importance: number;
   rank: number;
