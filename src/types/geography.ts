@@ -25,6 +25,7 @@ export interface CountryRecord {
   geometry: Polygon | MultiPolygon;
   /** Pre-extracted rings so renderers do not re-walk GeoJSON every frame. */
   rings: LngLatRing[];
+  bbox: GeoBBox;
 }
 
 export interface WorldCountriesData {
@@ -42,4 +43,18 @@ export interface CountryLabelAnchor {
   /** Higher = larger country; used for zoom-based label density. */
   importance: number;
   rank: number;
+}
+
+/** Lightweight country identity for hover/selection and Stage 4 folder entry. */
+export interface CountryRef {
+  id: string;
+  name: string;
+}
+
+export interface GeoBBox {
+  minLng: number;
+  maxLng: number;
+  minLat: number;
+  maxLat: number;
+  crossesAntimeridian: boolean;
 }

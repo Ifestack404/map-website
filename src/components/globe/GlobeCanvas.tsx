@@ -5,6 +5,7 @@ import { Canvas } from "@react-three/fiber";
 import { useProgress } from "@react-three/drei";
 import { ACESFilmicToneMapping } from "three";
 import { GLOBE_BACKGROUND, GLOBE_CAMERA } from "@/lib/globe-config";
+import { clearSelection, pointerGesture } from "@/state/countrySelection";
 import { GlobeLoader } from "./GlobeLoader";
 import { GlobeScene } from "./GlobeScene";
 
@@ -39,7 +40,7 @@ function InteractionHint({ visible }: { visible: boolean }) {
 
   return (
     <p className="pointer-events-none absolute bottom-6 left-1/2 z-10 -translate-x-1/2 rounded-full border border-white/10 bg-slate-950/50 px-4 py-2 text-xs tracking-wide text-slate-300 backdrop-blur-sm">
-      Drag to rotate · Scroll to zoom
+      Drag to rotate · Click a country to select
     </p>
   );
 }
@@ -71,6 +72,21 @@ export function GlobeCanvas() {
           gl.toneMapping = ACESFilmicToneMapping;
           gl.toneMappingExposure = 1.12;
           gl.setClearColor(GLOBE_BACKGROUND, 1);
+        }}
+        onPointerDown={(event) => {
+          pointerGesture.x = event.clientX;
+          pointerGesture.y = event.clientY;
+          pointerGesture.moved = false;
+        }}
+        onPointerMissed={(event) => {
+          const dx = event.clientX - pointerGesture.x;
+          const dy = event.clientY - pointerGesture.y;
+          const pointerType =
+            "pointerType" in event ? String(event.pointerType) : "mouse";
+          const threshold = pointerType === "touch" ? 18 : 8;
+          if (Math.hypot(dx, dy) < threshold && !pointerGesture.moved) {
+            clearSelection();
+          }
         }}
       >
         <Suspense fallback={null}>

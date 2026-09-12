@@ -83,11 +83,26 @@ export const COUNTRY_BORDERS = {
 export const COUNTRY_LABEL_RADIUS_SCALE = 1.012;
 
 export const COUNTRY_LABELS = {
-  facingDot: 0.32,
+  facingDot: 0.38,
   farDistance: 5.05,
   midDistance: 3.55,
-  farCount: 22,
-  midCount: 55,
+  farCount: 14,
+  midCount: 32,
+  /** Minimum angular separation between labels, by zoom tier. */
+  farMinAngle: 0.34,
+  midMinAngle: 0.2,
+  closeMinAngle: 0.11,
+} as const;
+
+/** Highlight fill sits between the Earth mesh and the border strokes. */
+export const COUNTRY_HIGHLIGHT_RADIUS_SCALE = 1.004;
+
+export const COUNTRY_HIGHLIGHT = {
+  hoverColor: "#7dd3fc",
+  hoverOpacity: 0.32,
+  selectedColor: "#38bdf8",
+  selectedOpacity: 0.48,
+  maxStepRadians: MathUtils.degToRad(2.2),
 } as const;
 
 export function getGlobeRadius(): number {
@@ -100,4 +115,8 @@ export function getCountryBorderRadius(): number {
 
 export function getCountryLabelRadius(): number {
   return EARTH_RADIUS * COUNTRY_LABEL_RADIUS_SCALE;
+}
+
+export function getCountryHighlightRadius(): number {
+  return EARTH_RADIUS * COUNTRY_HIGHLIGHT_RADIUS_SCALE;
 }

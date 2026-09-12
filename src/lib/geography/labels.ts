@@ -119,3 +119,36 @@ export function getCountryLabelAnchors(
   anchors.sort((a, b) => b.importance - a.importance);
   return anchors.map((anchor, rank) => ({ ...anchor, rank }));
 }
+
+function angleBetween(
+  a: CountryLabelAnchor["position"],
+  b: CountryLabelAnchor["position"],
+): number {
+  const dot =
+    (a[0] * b[0] + a[1] * b[1] + a[2] * b[2]) /
+    ((Math.hypot(a[0], a[1], a[2]) || 1) * (Math.hypot(b[0], b[1], b[2]) || 1));
+  const clamped = Math.min(1, Math.max(-1, dot));
+  return Math.acos(clamped);
+}
+
+/**
+ * Keep only labels that are far enough apart on the sphere
+ * so names do not stack on top of each other.
+ */
+export function spaceCountryLabels(
+  anchors: readonly CountryLabelAnchor[],
+  minAngleRadians: number,
+  maxCount: number,
+): CountryLabelAnchor[] {
+  const kept: CountryLabelAnchor[] = [];
+
+  for (const anchor of anchors) {
+    if (kept.length >= maxCount) break;
+    const collides = kept.some(
+      (other) => angleBetween(anchor.position, other.position) < minAngleRadians,
+    );
+    if (!collides) kept.push(anchor);
+  }
+
+  return kept;
+}

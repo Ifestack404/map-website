@@ -5,3 +5,5 @@ export { Earth } from "./Earth";
 export { CameraControls } from "./CameraControls";
 export { CountryLayer } from "./CountryLayer";
 export { CountryBorders } from "./CountryBorders";
+export { CountryInteraction } from "./CountryInteraction";
+export { SelectedCountry } from "./SelectedCountry";

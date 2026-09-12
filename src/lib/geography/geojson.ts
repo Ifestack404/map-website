@@ -11,6 +11,7 @@ import type { GeometryCollection, Topology } from "topojson-specification";
 import type {
   CountryProperties,
   CountryRecord,
+  GeoBBox,
   LngLat,
   LngLatRing,
 } from "@/types/geography";
@@ -65,12 +66,15 @@ function toCountryRecord(
       : undefined;
   const id = isoCode ?? `name:${name}`;
 
+  const rings = extractPolygonRings(geometry);
+
   return {
     id,
     name,
     isoCode,
     geometry,
-    rings: extractPolygonRings(geometry),
+    rings,
+    bbox: bboxFromRings(rings),
   };
 }
 
@@ -102,4 +106,28 @@ export function extractPolygonRings(
     }
   }
   return rings;
+}
+
+function bboxFromRings(rings: LngLatRing[]): GeoBBox {
+  let minLng = 180;
+  let maxLng = -180;
+  let minLat = 90;
+  let maxLat = -90;
+
+  for (const ring of rings) {
+    for (const [lng, lat] of ring) {
+      if (lng < minLng) minLng = lng;
+      if (lng > maxLng) maxLng = lng;
+      if (lat < minLat) minLat = lat;
+      if (lat > maxLat) maxLat = lat;
+    }
+  }
+
+  return {
+    minLng,
+    maxLng,
+    minLat,
+    maxLat,
+    crossesAntimeridian: maxLng - minLng > 180,
+  };
 }

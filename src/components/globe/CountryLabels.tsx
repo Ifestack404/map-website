@@ -5,23 +5,33 @@ import { useFrame } from "@react-three/fiber";
 import { Text } from "@react-three/drei";
 import { Group, Vector3 } from "three";
 import { COUNTRY_LABELS } from "@/lib/globe-config";
-import { getCountryLabelAnchors } from "@/lib/geography/labels";
+import {
+  getCountryLabelAnchors,
+  spaceCountryLabels,
+} from "@/lib/geography/labels";
 import type { CountryLabelAnchor, CountryRecord } from "@/types/geography";
 
 const worldPos = new Vector3();
 const cameraDir = new Vector3();
 
-function labelLimit(distance: number): number {
-  if (distance > COUNTRY_LABELS.farDistance) return COUNTRY_LABELS.farCount;
-  if (distance > COUNTRY_LABELS.midDistance) return COUNTRY_LABELS.midCount;
-  return Number.POSITIVE_INFINITY;
+function labelLimit(distance: number): {
+  count: number;
+  minAngle: number;
+} {
+  if (distance > COUNTRY_LABELS.farDistance) {
+    return { count: COUNTRY_LABELS.farCount, minAngle: COUNTRY_LABELS.farMinAngle };
+  }
+  if (distance > COUNTRY_LABELS.midDistance) {
+    return { count: COUNTRY_LABELS.midCount, minAngle: COUNTRY_LABELS.midMinAngle };
+  }
+  return { count: Number.POSITIVE_INFINITY, minAngle: COUNTRY_LABELS.closeMinAngle };
 }
 
 function fontSizeForRank(rank: number): number {
-  if (rank < 8) return 0.108;
-  if (rank < 22) return 0.078;
-  if (rank < 55) return 0.054;
-  return 0.04;
+  if (rank < 8) return 0.09;
+  if (rank < 18) return 0.062;
+  if (rank < 32) return 0.048;
+  return 0.038;
 }
 
 function CountryLabel({ anchor }: { anchor: CountryLabelAnchor }) {
@@ -34,7 +44,6 @@ function CountryLabel({ anchor }: { anchor: CountryLabelAnchor }) {
     group.getWorldPosition(worldPos);
     worldPos.normalize();
     cameraDir.copy(camera.position).normalize();
-    // Hide edge-on text at the limb so names do not flatten into floating slivers.
     group.visible = worldPos.dot(cameraDir) > COUNTRY_LABELS.facingDot;
   });
 
@@ -43,15 +52,16 @@ function CountryLabel({ anchor }: { anchor: CountryLabelAnchor }) {
       <Text
         fontSize={fontSizeForRank(anchor.rank)}
         color="#f8fafc"
-        outlineWidth={0.018}
+        outlineWidth={0.02}
         outlineColor="#020617"
-        outlineOpacity={0.9}
+        outlineOpacity={0.92}
         anchorX="center"
         anchorY="middle"
         textAlign="center"
-        maxWidth={0.85}
+        maxWidth={1.15}
         overflowWrap="break-word"
-        letterSpacing={0.02}
+        letterSpacing={0.12}
+        lineHeight={1.45}
         depthOffset={-4}
         renderOrder={3}
         raycast={() => {}}
@@ -64,7 +74,7 @@ function CountryLabel({ anchor }: { anchor: CountryLabelAnchor }) {
 
 /**
  * Country names as 3D glyphs on the sphere surface.
- * They inherit Earth's rotation and are occluded on the far side.
+ * Nearby names are culled so labels do not sit on top of each other.
  */
 export function CountryLabels({
   countries,
@@ -72,20 +82,23 @@ export function CountryLabels({
   countries: readonly CountryRecord[];
 }) {
   const anchors = useMemo(() => getCountryLabelAnchors(countries), [countries]);
-  const [limit, setLimit] = useState(() => labelLimit(4.35));
-  const limitRef = useRef(limit);
+  const [tier, setTier] = useState(() => labelLimit(4.35));
+  const tierRef = useRef(tier);
 
   useFrame(({ camera }) => {
     const next = labelLimit(camera.position.length());
-    if (next !== limitRef.current) {
-      limitRef.current = next;
-      setLimit(next);
+    if (
+      next.count !== tierRef.current.count ||
+      next.minAngle !== tierRef.current.minAngle
+    ) {
+      tierRef.current = next;
+      setTier(next);
     }
   });
 
   const visible = useMemo(
-    () => anchors.filter((anchor) => anchor.rank < limit),
-    [anchors, limit],
+    () => spaceCountryLabels(anchors, tier.minAngle, tier.count),
+    [anchors, tier],
   );
 
   return (
