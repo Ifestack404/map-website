@@ -8,6 +8,7 @@ import { useWorldNavigation } from "@/state/worldNavigation";
 import { Breadcrumb } from "./Breadcrumb";
 import { FolderAnimation, FolderPanelMotion } from "./FolderAnimation";
 import { FolderItem } from "./FolderItem";
+import { CountryInfo } from "@/components/information";
 
 function FolderGlobeBridge() {
   const globeCountry = useSelectedCountry();
@@ -84,7 +85,7 @@ export function FolderPanel() {
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 p-3 sm:inset-auto sm:top-6 sm:right-6 sm:bottom-auto sm:left-auto sm:p-0">
         <FolderPanelMotion open={isOpen}>
           <aside
-            className="max-h-[42vh] w-full overflow-hidden rounded-2xl border border-white/10 bg-slate-950/80 shadow-[0_18px_60px_rgba(2,6,23,0.55)] backdrop-blur-xl sm:max-h-[min(34rem,calc(100dvh-3rem))] sm:w-[20.5rem]"
+            className="max-h-[42vh] w-full overflow-hidden rounded-2xl border border-white/10 bg-slate-950/80 shadow-[0_18px_60px_rgba(2,6,23,0.55)] backdrop-blur-xl sm:max-h-[min(34rem,calc(100dvh-3rem))] sm:w-[22rem]"
             aria-label="World folder explorer"
             aria-live="polite"
           >
@@ -122,17 +123,11 @@ export function FolderPanel() {
             <FolderAnimation folderId={currentFolderId}>
               <div className="max-h-[min(28vh,16rem)] overflow-y-auto overscroll-contain px-2 py-2 sm:max-h-[min(26rem,calc(100dvh-9rem))]">
                 {folder?.type === "country" ? (
-                  <div className="px-3 py-3">
-                    <p className="text-[0.65rem] tracking-[0.18em] text-sky-200/80 uppercase">
-                      Country
-                    </p>
-                    <p className="mt-2 text-lg font-medium tracking-wide text-white">
-                      {selectedCountry?.name ?? folder.name}
-                    </p>
-                    <p className="mt-3 text-sm leading-relaxed text-slate-400">
-                      City folders will open from here in a later stage.
-                    </p>
-                  </div>
+                  <CountryInfo
+                    key={folder.id}
+                    countryId={folder.id}
+                    fallbackName={selectedCountry?.name ?? folder.name}
+                  />
                 ) : children.length > 0 ? (
                   <ul className="space-y-0.5">
                     {children.map((child) => (
