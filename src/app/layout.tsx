@@ -14,7 +14,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "World Globe",
-  description: "Interactive 3D Earth — rotate, zoom, and explore the planet.",
+  description:
+    "Interactive 3D Earth — explore the planet as World, continent, and country folders.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

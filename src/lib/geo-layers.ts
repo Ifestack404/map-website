@@ -13,9 +13,9 @@ export function getGlobeLayers(): GlobeLayerDescriptor[] {
 }
 
 /**
- * Folder-tree nodes. Stage 2 keeps this empty — country records live in
- * `getWorldCountries()` so the folder UI can consume them in a later stage
- * without mixing geometry into the explorer list.
+ * Folder-tree nodes. The live explorer reads `getWorldFolderTree()`
+ * so this helper can later expose a flattened API view without
+ * mixing geometry into the folder panel.
  */
 export function getGeoHierarchy(): GeoEntity[] {
   return [];

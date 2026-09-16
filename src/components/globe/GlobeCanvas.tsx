@@ -35,16 +35,6 @@ function LoaderOverlay({ isReady }: { isReady: boolean }) {
   return <GlobeLoader progress={percent} fading={isReady} />;
 }
 
-function InteractionHint({ visible }: { visible: boolean }) {
-  if (!visible) return null;
-
-  return (
-    <p className="pointer-events-none absolute bottom-6 left-1/2 z-10 -translate-x-1/2 rounded-full border border-white/10 bg-slate-950/50 px-4 py-2 text-xs tracking-wide text-slate-300 backdrop-blur-sm">
-      Drag to rotate · Click a country to select
-    </p>
-  );
-}
-
 /**
  * WebGL surface + HTML overlays.
  * Dynamically imported with SSR disabled from GlobeExperience.
@@ -95,7 +85,6 @@ export function GlobeCanvas() {
       </Canvas>
 
       <LoaderOverlay isReady={isReady} />
-      <InteractionHint visible={isReady} />
     </div>
   );
 }
