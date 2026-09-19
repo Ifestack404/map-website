@@ -4,23 +4,23 @@ import { AdaptiveDpr, Stars } from "@react-three/drei";
 import { GLOBE_BACKGROUND, GLOBE_LIGHTING } from "@/lib/globe-config";
 import { useGlobeInteraction } from "@/hooks/useGlobeInteraction";
 import type { GlobeSceneProps } from "@/types/globe";
+import { CameraAnimator } from "./CameraAnimator";
 import { CameraControls } from "./CameraControls";
 import { CountryLayer } from "./CountryLayer";
 import { Earth } from "./Earth";
+import { GlobeEffects } from "./GlobeEffects";
 
 function GlobeLighting() {
   const { ambient, sun, hemisphere } = GLOBE_LIGHTING;
 
   return (
     <>
-      {/* Cool fill so oceans do not crush to black on the dark side. */}
       <ambientLight intensity={ambient.intensity} color={ambient.color} />
       <hemisphereLight
         color={hemisphere.sky}
         groundColor={hemisphere.ground}
         intensity={hemisphere.intensity}
       />
-      {/* Key light acts as the Sun — drives bump highlights and limb contrast. */}
       <directionalLight
         position={[...sun.position]}
         intensity={sun.intensity}
@@ -60,6 +60,8 @@ export function GlobeScene({ onGlobeReady }: GlobeSceneProps) {
       </Earth>
 
       <CameraControls interactionRef={interactionRef} />
+      <CameraAnimator />
+      <GlobeEffects />
     </>
   );
 }

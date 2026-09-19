@@ -8,6 +8,8 @@ import { findCountryAtLatLng } from "@/lib/geography/lookup";
 import { pointerGesture } from "@/state/countrySelection";
 import { useCountryInteraction } from "@/hooks/useCountryInteraction";
 import { CountryHighlight } from "./CountryHighlight";
+import { CountryFocus } from "./CountryFocus";
+import { CountryGlow } from "./CountryGlow";
 import type { CountryRef } from "@/types/geography";
 
 const TAP_MOUSE_PX = 8;
@@ -93,7 +95,10 @@ export function CountryInteraction() {
   return (
     <group name="country-interaction">
       {selectedCountry ? (
-        <CountryHighlight country={selectedCountry} variant="selected" />
+        <>
+          <CountryGlow country={selectedCountry} />
+          <CountryFocus country={selectedCountry} />
+        </>
       ) : null}
       {hoveredCountry && hoveredCountry.id !== selectedCountry?.id ? (
         <CountryHighlight country={hoveredCountry} variant="hover" />

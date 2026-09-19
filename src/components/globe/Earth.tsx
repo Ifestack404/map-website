@@ -18,6 +18,7 @@ import {
   EARTH_TEXTURES,
 } from "@/lib/globe-config";
 import type { EarthProps } from "@/types/globe";
+import { useSelectedCountry } from "@/hooks/useCountryInteraction";
 
 const atmosphereVertexShader = /* glsl */ `
   varying vec3 vNormal;
@@ -75,6 +76,7 @@ export function Earth({ interactionRef, children, onReady }: EarthProps) {
   const groupRef = useRef<Group>(null);
   const { gl } = useThree();
   const anisotropy = Math.min(8, gl.capabilities.getMaxAnisotropy());
+  const selectedCountry = useSelectedCountry();
 
   const [colorMap, bumpMap] = useTexture([
     EARTH_TEXTURES.day,
@@ -89,6 +91,9 @@ export function Earth({ interactionRef, children, onReady }: EarthProps) {
     const group = groupRef.current;
     if (!group) return;
 
+    // Freeze idle spin while a country is focused so camera math stays locked.
+    if (selectedCountry) return;
+
     const { isInteracting, lastActivityAt } = interactionRef.current;
     const idle =
       !isInteracting &&
@@ -100,7 +105,7 @@ export function Earth({ interactionRef, children, onReady }: EarthProps) {
   });
 
   return (
-    <group ref={groupRef}>
+    <group ref={groupRef} name="earth-root">
       <mesh name="earth-surface" castShadow={false} receiveShadow={false}>
         {/* Stage 3: raycast this mesh, then cartesianToLatLng() to resolve a country. */}
         <sphereGeometry args={[EARTH_RADIUS, EARTH_SEGMENTS, EARTH_SEGMENTS]} />

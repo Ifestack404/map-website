@@ -85,14 +85,21 @@ export function FolderPanel() {
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 p-3 sm:inset-auto sm:top-6 sm:right-6 sm:bottom-auto sm:left-auto sm:p-0">
         <FolderPanelMotion open={isOpen}>
           <aside
-            className="max-h-[42vh] w-full overflow-hidden rounded-2xl border border-white/10 bg-slate-950/80 shadow-[0_18px_60px_rgba(2,6,23,0.55)] backdrop-blur-xl sm:max-h-[min(34rem,calc(100dvh-3rem))] sm:w-[22rem]"
+            className="relative max-h-[42vh] w-full overflow-hidden rounded-2xl border border-teal-400/15 bg-slate-950/80 shadow-[0_18px_60px_rgba(2,6,23,0.55),0_0_40px_rgba(45,212,191,0.08)] backdrop-blur-xl sm:max-h-[min(34rem,calc(100dvh-3rem))] sm:w-[22rem]"
             aria-label="World folder explorer"
             aria-live="polite"
           >
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -left-16 top-1/3 h-36 w-36 rounded-full bg-teal-400/10 blur-3xl"
+            />
             <header className="flex items-start gap-3 border-b border-white/10 px-4 py-3">
               <div className="min-w-0 flex-1 space-y-2">
                 <p className="text-[0.62rem] font-medium tracking-[0.22em] text-sky-200/75 uppercase">
                   Explorer
+                </p>
+                <p className="text-[0.58rem] tracking-[0.18em] text-teal-200/50 uppercase">
+                  Geographic OS
                 </p>
                 <Breadcrumb path={ancestry} onOpen={openFolder} />
               </div>

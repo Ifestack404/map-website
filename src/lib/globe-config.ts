@@ -120,3 +120,24 @@ export function getCountryLabelRadius(): number {
 export function getCountryHighlightRadius(): number {
   return EARTH_RADIUS * COUNTRY_HIGHLIGHT_RADIUS_SCALE;
 }
+
+/** Stage 6 — cinematic country focus camera. */
+export const CAMERA_FOCUS = {
+  /** Idle framing distance from globe center. */
+  idleDistance: GLOBE_CAMERA.position[2],
+  /** Closer orbit when a country is selected (desktop). */
+  focusDistance: EARTH_RADIUS * 2.15,
+  /** Slightly farther on small screens for usable touch orbit. */
+  mobileFocusDistance: EARTH_RADIUS * 2.55,
+  focusDurationMs: 1400,
+  returnDurationMs: 1100,
+  /** Exponential damping toward the eased path (higher = snappier). */
+  damping: 4.2,
+} as const;
+
+export const COUNTRY_GLOW = {
+  color: "#5eead4",
+  fillOpacity: 0.14,
+  borderOpacity: 0.72,
+  radiusScale: 1.006,
+} as const;
